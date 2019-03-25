@@ -27,9 +27,10 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Connect to the Mongo DB
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/newarticles";
 
 mongoose.connect(MONGODB_URI);
+// mongoose.connect("mongodb://localhost/newarticles", { useNewUrlParser: true });
 
 
 // Routes
@@ -37,12 +38,12 @@ mongoose.connect(MONGODB_URI);
 // A GET route for scraping the echoJS website
 app.get("/scrape", function(req, res) {
   // First, we grab the body of the html with axios
-  axios.get("https://www.nytimes.com/").then(function(response) {
+  axios.get("https://www.nytimes.com/section/world/americas/").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
 
     // Now, we grab every h2 within an article tag, and do the following:
-    $("article h2").each(function(i, element) {
+    $("h2").each(function(i, element) {
       // Save an empty result object
       var result = {};
 
@@ -50,9 +51,13 @@ app.get("/scrape", function(req, res) {
       result.title = $(this)
         .children("a")
         .text();
+      result.summary = $(this)
+        .children("p")
+        .text();
       result.link = $(this)
         .children("a")
         .attr("href");
+
 
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
