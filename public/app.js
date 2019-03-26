@@ -6,7 +6,7 @@ $.getJSON("/articles", function(data) {
     $("#articles").append("<h1 data[i].title </h1>" + data._id+ "<br> + <p>data[i].link</p> + <br> + <h4> data[i].summary</h4>");
   }
 });
-
+$()
 
 // Whenever someone clicks a p tag
 $(document).on("click", "p", function() {
